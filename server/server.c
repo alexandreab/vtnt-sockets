@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in clientInfo;
     struct sockaddr_in serverInfo;
     //Criando contadores, IDS de mensagens e um inteiro que sera utilizado com backup 
-    int serverSocket, writerSocket,index,temp[2],backup;
+    int serverSocket, writer, index, temp[2], backup, clientSocket;
     //Criando um char que vai enviar um comando para o servidor e um char que vai enviar a resposta de volta
     char command[1024],buffer[1024];
 
@@ -30,53 +30,30 @@ int main(int argc, char *argv[])
     serverInfo.sin_addr.s_addr = INADDR_ANY;
     serverInfo.sin_port = htons(PORTNUM);
 
+    //Zerando o buffer de comando
+    bzero(command,1024);
     //Criando o socket do servidor e "bindando" a porta que foi definida anteriormente
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
     bind(serverSocket, (struct sockaddr *)&serverInfo, sizeof(struct sockaddr));
     listen(serverSocket, 1);
     printf("Server initiatled. Listening on port %d \n",PORTNUM);
-	
-    //Esperando uma conexão até o cliente se conectar, quando se conectar ele aceita a conexao
-    int connectionSocket = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize);
-    while(connectionSocket){
+    while(clientSocket  = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize)){
     	//Quando um cliente se conecta ele espera o comando com a funcao read()
         printf("Client %s connected\n", inet_ntoa(clientInfo.sin_addr));
-        connectionSocket = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize);
-        writerSocket = read(serverSocket,(char *) command, 1024);
-	while(writerSocket){
-	        writerSocket = read(serverSocket,(char *) command, 1024);
-		index = strlen(command) - 1;
-		//funcao condicional que vai separar os comandos atraves de um espaco ["Enter"]
-		if (command[index] == '\n'){
-                        command[index] = '\0';
-                        // Definicao dos comandos que o socket vai responder, no caso inicial so temos esses dois comandos
-			if (strncmp(command, "ola ", 2) == 0){ 
-                        	printf("Client send Hello Message: %s\n",command);
-               		}else if(strcmp(command,":logoff") == 0){
-                           	writerSocket = write(serverSocket, (void *) "Closing connection\n", 18);
-                           	close(connectionSocket);
-                            	close(serverSocket);
-                   	    	printf ("Connection Closed!\n");
-                    	    	exit(0);
-			}
-		}else{
-		    //Devolvendo o retorno do comando digitado para o cliente através da chamada do sistema dup()
-	            backup = dup(1);
-                    close(0);
-                    close(1);
-                    pipe(temp);
-                    system(command);
-                    //Outra chamada de sistema para escrever a resposta para o cliente
-                    dup2(backup,1);
-                    //Escreve a resposta no socket
-                    while (fgets(buffer, 1024, stdin)){
-                        writerSocket=write(serverSocket,(void *)buffer,strlen(buffer));
-		    }
-		}
+        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28); 	
+	
+	while(writer = read(clientSocket,(char *) command, 1024)){
+	    index = strlen(command) - 1;
+            if (command[index] == '\n'){
+		command[index] = '\0'; 
+		printf("comando recebido\n");
+	    }
+	    memset(&command, 0, sizeof (command));
 	}
+	      
     }
     //Fechando os sockets e "matando" a conexao
-    close(connectionSocket);
+    close(clientSocket);
     close(serverSocket);
     exit(0);
 }
