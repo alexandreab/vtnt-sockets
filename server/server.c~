@@ -40,26 +40,20 @@ int main(int argc, char *argv[])
     while(clientSocket  = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize)){
     	//Quando um cliente se conecta ele espera o comando com a funcao read()
         printf("Client %s connected\n", inet_ntoa(clientInfo.sin_addr));
-        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28);
-
-	while(writer = read(clientSocket,(char *) command, 1024)){
+        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28); 	
+	writer = read(clientSocket,(char *) command, 1024);
+	while(writer > 0){
 	    index = strlen(command) - 1;
             if (command[index] == '\n'){
 		command[index] = '\0'; 
 		printf("comando recebido\n");
-		//TRATAMENTO DE COMANDOS, BASEANDO-SE NA LOGICA ABAIXO
-	    	if(strncmp(command, "teste ", 5) == 0){
-		     printf("Comando Teste recebido\n");
-		     writer = write(clientSocket,(void *) "You send the test command!\n", 29);
-		}
 	    }
 	    memset(&command, 0, sizeof (command));
 	}
+	      
     }
     //Fechando os sockets e "matando" a conexao
     close(clientSocket);
     close(serverSocket);
     exit(0);
 }
-
-
