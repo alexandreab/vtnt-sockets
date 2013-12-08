@@ -10,7 +10,9 @@
 #include <sys/socket.h>
 
 // Definindo a porta que será utilizada pelo socket TCP
-#define PORTNUM 5138
+
+
+#define PORTNUM 5137
 
 void command(char direction){
     
@@ -78,8 +80,13 @@ int main(int argc, char *argv[])
     while(clientSocket  = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize)){
     	//Quando um cliente se conecta ele espera o comando com a funcao read()
         printf("Client %s connected\n", inet_ntoa(clientInfo.sin_addr));
-        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28); 	
-	
+        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28);
+        while(1){
+          sleep(1);
+          writer = write(clientSocket,(void *) "Enviando coordenada!\n", 24);
+        }
+    }
+/*	
 	    while(writer = read(clientSocket,(char *) command, 1024)){
 	        index = strlen(command) - 1;
                 if (command[index] == '\n'){
@@ -99,5 +106,5 @@ int main(int argc, char *argv[])
     //Fechando os sockets e "matando" a conexao
     close(clientSocket);
     close(serverSocket);
-    exit(0);
+    exit(0);*/
 }
