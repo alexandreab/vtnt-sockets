@@ -4,8 +4,17 @@
 #include <iostream>
 #include <thread>
 
+#include <stdio.h>
+#include <wiringPi.h>
+
+#define	I1	0	// 17
+#define	I2	1	// 18
+
+
+
 using namespace std;
 
+void move(string data);
 void socketSend(void);
 void socketReceive(void);
 
@@ -47,6 +56,7 @@ void socketReceive(void)
 				{
 					std::string data;
 					new_sock >> data;
+					move(data);
 					cout << "Recebido: " << data << endl;
 					//Fal algo
 				}
@@ -91,4 +101,39 @@ void socketSend(void)
     {
     	std::cout << "Exception was caught:" << e.description() << "\nExiting.\n";
     }
+}
+
+void move(string data)
+{
+  wiringPiSetup () ;
+  pinMode (I1, OUTPUT) ;
+  pinMode (I2, OUTPUT) ;
+  digitalWrite (I1, LOW) ;	// Off
+  digitalWrite (I2, LOW) ;	// Off
+  delay (500) ;		// mS
+  printf("\n Horario: 1; Antihorario: 2; Parar: 0\n");
+
+  	if(data=="pause")
+  	{
+  	 	printf("\nParando o motor...");
+  	 	digitalWrite (I1, LOW) ;	// Off
+  		digitalWrite (I2, LOW) ;	// Off
+  		delay (500) ;		// mS
+  	}
+  	else if(data=="forward")
+  	{
+  	 	printf("\nGirando o motor no sentido horario...");
+  	 	digitalWrite (I1, LOW) ;	// Off
+  		digitalWrite (I2, LOW) ;	// Off
+  		delay (500) ;			// mS
+  		digitalWrite (I1, HIGH) ;	// On
+  	}
+  	else if(data=="reverse")
+  	{
+  	 	printf("\nGirando o motor no sentido antihorario...");
+  	 	digitalWrite (I1, LOW) ;	// Off
+  		digitalWrite (I2, LOW) ;	// Off
+  		delay (500) ;			// mS
+  		digitalWrite (I2, HIGH) ;	// On
+  	}
 }
