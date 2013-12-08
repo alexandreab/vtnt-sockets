@@ -14,7 +14,7 @@ messenger_objects = Socket.o ClientSocket.o
 all : socket
 
 socket: 
-	g++ $(VTNT_FLAGS) -o prog ClientSocket.cpp ServerSocket.cpp Socket.cpp VTNTConnection.cpp
+	g++ $(VTNT_FLAGS) -o prog ServerSocket.cpp Socket.cpp VTNTConnection.cpp
 simple_server: $(simple_server_objects)
 	g++ -o simple_server $(simple_server_objects)
 

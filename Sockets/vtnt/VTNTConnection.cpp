@@ -9,7 +9,8 @@
 
 #define	I1	0	// 17
 #define	I2	1	// 18
-
+#define I3  2
+#define I4  3
 
 
 using namespace std;
@@ -106,34 +107,74 @@ void socketSend(void)
 void move(string data)
 {
   wiringPiSetup () ;
-  pinMode (I1, OUTPUT) ;
-  pinMode (I2, OUTPUT) ;
+  //MOTOR 1
+  pinMode (I1, OUTPUT);
+  pinMode (I2, OUTPUT);
+  //MOTOR 2
+  pinMode (I3, OUTPUT);
+  pinMode (I4, OUTPUT);
+
   digitalWrite (I1, LOW) ;	// Off
   digitalWrite (I2, LOW) ;	// Off
+  digitalWrite (I3, LOW) ;	// Off
+  digitalWrite (I4, LOW) ;	// Off
+
   delay (500) ;		// mS
-  printf("\n Horario: 1; Antihorario: 2; Parar: 0\n");
 
   	if(data=="pause")
   	{
-  	 	printf("\nParando o motor...");
+  	 	//printf("\nParando o motor...");
   	 	digitalWrite (I1, LOW) ;	// Off
-  		digitalWrite (I2, LOW) ;	// Off
-  		delay (500) ;		// mS
+  	 	digitalWrite (I2, LOW) ;	// Off
+  	 	digitalWrite (I3, LOW) ;	// Off
+  	 	digitalWrite (I4, LOW) ;	// Off
   	}
   	else if(data=="forward")
   	{
   	 	printf("\nGirando o motor no sentido horario...");
   	 	digitalWrite (I1, LOW) ;	// Off
   		digitalWrite (I2, LOW) ;	// Off
+  		digitalWrite (I3, LOW) ;	// Off
+  		digitalWrite (I4, LOW) ;	// Off
+
   		delay (500) ;			// mS
-  		digitalWrite (I1, HIGH) ;	// On
+  		
+      digitalWrite (I1, HIGH) ;	// On
+		  digitalWrite (I3, HIGH) ;
   	}
   	else if(data=="reverse")
   	{
   	 	printf("\nGirando o motor no sentido antihorario...");
   	 	digitalWrite (I1, LOW) ;	// Off
   		digitalWrite (I2, LOW) ;	// Off
-  		delay (500) ;			// mS
-  		digitalWrite (I2, HIGH) ;	// On
+  		digitalWrite (I3, LOW) ;	// Off
+  		digitalWrite (I4, LOW) ;	// Off
+  		
+      delay (500) ;			// mS
+  		
+      digitalWrite (I2, HIGH) ;	// On
+		  digitalWrite (I4, HIGH) ;
   	}
+	else if(data=="to_left")
+	{
+  		digitalWrite (I1, LOW) ;	// Off
+  		digitalWrite (I2, LOW) ;	// Off
+  		digitalWrite (I3, LOW) ;	// Off
+  		digitalWrite (I4, LOW) ;	// Off
+		
+      delay (500);
+  		
+      digitalWrite (I1,HIGH) ;	// On
+	}
+	else if(data=="to_right")
+	{
+		  digitalWrite (I1, LOW) ;	// Off
+  		digitalWrite (I2, LOW) ;	// Off
+  		digitalWrite (I3, LOW) ;	// Off
+  		digitalWrite (I4, LOW) ;	// Off
+		  
+      delay(500);
+  		
+      digitalWrite (I3, HIGH) ;	// On
+	}
 }
