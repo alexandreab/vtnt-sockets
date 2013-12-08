@@ -12,8 +12,47 @@
 // Definindo a porta que será utilizada pelo socket TCP
 #define PORTNUM 5137
 
+void command(char direction){
+    
+    switch(direction){
+        case 'f':
+            //TODO: function to move car forward
+        case 'b':
+            //TODO: function to move car back
+        case 'l':
+            //TODO: function to move car left
+        case 'r':
+            //TODO: function to move car right
+        default:
+            printf("Unknown direction");
+            //TODO: make a exception
+    }
+}
+
+char * simulation(){
+      FILE *file = fopen("../simulation.txt", "rt");
+      char values[100], *line;
+      int i = 1;
+      
+      if (!file){
+          printf("Unable to open file\n");
+          return 0;
+      }
+      
+      while (!feof(file)){
+           line = fgets(values, 200,file); 
+           if(line){
+               printf("Coordenate %d : %s",i,values);
+           }
+           i++;
+           sleep(1);
+      }
+      close(file);
+ 
+}
 int main(int argc, char *argv[])
 {
+    simulation();
     //Criacao de duas estruturas de sockets, contendo o servidor e o cliente que vai conectar no servidor
     struct sockaddr_in clientInfo;
     struct sockaddr_in serverInfo;
@@ -40,26 +79,26 @@ int main(int argc, char *argv[])
     while(clientSocket  = accept(serverSocket, (struct sockaddr *)&clientInfo, &socksize)){
     	//Quando um cliente se conecta ele espera o comando com a funcao read()
         printf("Client %s connected\n", inet_ntoa(clientInfo.sin_addr));
-        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28);
-
-	while(writer = read(clientSocket,(char *) command, 1024)){
-	    index = strlen(command) - 1;
-            if (command[index] == '\n'){
-		command[index] = '\0'; 
-		printf("comando recebido\n");
-		//TRATAMENTO DE COMANDOS, BASEANDO-SE NA LOGICA ABAIXO
-	    	if(strncmp(command, "teste ", 5) == 0){
-		     printf("Comando Teste recebido\n");
-		     writer = write(clientSocket,(void *) "You send the test command!\n", 29);
-		}
+        writer = write(clientSocket,(void *) "Welcome! Connected to VTNT!\n", 28); 	
+	
+	    while(writer = read(clientSocket,(char *) command, 1024)){
+	        index = strlen(command) - 1;
+                if (command[index] == '\n'){
+		            command[index] = '\0'; 
+		            printf("comando recebido\n");
+	    	        if(strncmp(command, "teste ", 5) == 0){
+		                printf("Comando Teste recebido\n");
+		                writer = write(clientSocket,(void *) "You send the test command!\n", 28);
+		            } 
+                    else if(strncmp(command, "coordenates ", 10) == 0){
+                        simulation();
+                    }
+	            }
+	        memset(&command, 0, sizeof (command));
 	    }
-	    memset(&command, 0, sizeof (command));
-	}
     }
     //Fechando os sockets e "matando" a conexao
     close(clientSocket);
     close(serverSocket);
     exit(0);
 }
-
-
